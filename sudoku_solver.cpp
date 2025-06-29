@@ -44,10 +44,10 @@ bool solve(vector<vector<char>> &board)
     }
     return true;
 }
-void solveSudoku(vector<vector<char>> &board) 
-    { 
-        solve(board); 
-    }
+bool solveSudoku(vector<vector<char>> &board)
+{
+    return solve(board);
+}
 
 void genRandom(vector<vector<vector<char>>> &board)
 {
@@ -176,15 +176,22 @@ int main()
     genRandom(board);
     srand(time(0)); // at every call it will gen. a ne random value
     int index = rand() % board.size();
-    solveSudoku(board[index]); //made a solve function call here!
-
-    //print the solved sudoku! 
-    cout << "Solved Sudoku (Index " << index << "):\n";
-    for(int i = 0; i < board[index].size(); i++) {
-        for(int j = 0; j < board[index][i].size(); j++) {
-            cout << board[index][i][j] << " ";
+    if (solveSudoku(board[index])) // made a solve function call here!
+    {
+        // print the solved sudoku!
+        cout << "Solved Sudoku (Index " << index << "):\n";
+        for (int i = 0; i < board[index].size(); i++)
+        {
+            for (int j = 0; j < board[index][i].size(); j++)
+            {
+                cout << board[index][i][j] << " ";
+            }
+            cout << endl;
         }
-        cout << endl;
+    }
+    else
+    {
+        cout << "Sudoku (Index " << index << ") is unsolvable.\n";
     }
     return 0;
 }
