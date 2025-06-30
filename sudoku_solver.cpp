@@ -1,53 +1,76 @@
 #include <bits/stdc++.h>
 
 using namespace std;
-bool isvalid(vector<vector<char>> &board, int row, int col, char c)
+class sudoku_cracker
 {
-    for (int k = 0; k < 9; k++)
+private:
+    vector<vector<char>> board;
+
+    bool isvalid(vector<vector<char>> &board, int row, int col, char c)
     {
-        if (board[row][k] == c)
-            return false; // this checks the whole row!
-        if (board[k][col] == c)
-            return false; // this checks the while col!
-        // this is important, checking the sub matrix! it has a formula
-        if (board[3 * (row / 3) + (k / 3)][3 * (col / 3) + (k % 3)] == c)
-            return false;
-    }
-    return true;
-}
-bool solve(vector<vector<char>> &board)
-{
-    for (int i = 0; i < board.size(); i++)
-    {
-        for (int j = 0; j < board[i].size(); j++)
+        for (int k = 0; k < 9; k++)
         {
-            if (board[i][j] == '.')
+            if (board[row][k] == c)
+                return false; // this checks the whole row!
+            if (board[k][col] == c)
+                return false; // this checks the while col!
+            // this is important, checking the sub matrix! it has a formula
+            if (board[3 * (row / 3) + (k / 3)][3 * (col / 3) + (k % 3)] == c)
+                return false;
+        }
+        return true;
+    }
+    bool solve(vector<vector<char>> &board)
+    {
+        for (int i = 0; i < board.size(); i++)
+        {
+            for (int j = 0; j < board[i].size(); j++)
             {
-                for (char c = '1'; c <= '9'; c++)
+                if (board[i][j] == '.')
                 {
-                    if (isvalid(board, i, j, c))
+                    for (char c = '1'; c <= '9'; c++)
                     {
-                        board[i][j] = c; // here we inserted the character at the place of '.'
-                        if (solve(board) == true)
+                        if (isvalid(board, i, j, c))
                         {
-                            return true;
-                        }
-                        else
-                        {
-                            board[i][j] = '.';
+                            board[i][j] = c; // here we inserted the character at the place of '.'
+                            if (solve(board) == true)
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                board[i][j] = '.';
+                            }
                         }
                     }
+                    return false;
                 }
-                return false;
             }
         }
+        return true;
     }
-    return true;
-}
-bool solveSudoku(vector<vector<char>> &board)
-{
-    return solve(board);
-}
+
+public:
+    sudoku_cracker(const vector<vector<char>> &initialBoard)
+    {
+        board = initialBoard;
+    }
+
+    bool solveSudoku(vector<vector<char>> &board)
+    {
+        return solve(board);
+    }
+
+    void printBoard()
+    {
+        for (auto &row : board)
+        {
+            for (auto &cell : row)
+                cout << cell << " ";
+            cout << endl;
+        }
+    }
+};
 
 void genRandom(vector<vector<vector<char>>> &board)
 {
@@ -176,7 +199,13 @@ int main()
     genRandom(board);
     srand(time(0)); // at every call it will gen. a ne random value
     int index = rand() % board.size();
-    if (solveSudoku(board[index])) // made a solve function call here!
+    sudoku_cracker prime_solver(board[index]); // here I created an object of the class and passed board[index] in it, after creating the object, parametrized constructor will get called automatically.
+
+    cout << "Sudoku Puzzle (Index " << index << "):\n";
+    prime_solver.printBoard();
+    cout << "\nSolving...\n\n";
+
+    if (prime_solver.solveSudoku(board[index])) // made a solve function call here!
     {
         // print the solved sudoku!
         cout << "Solved Sudoku (Index " << index << "):\n";
